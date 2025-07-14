@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interior Design Estimation Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin: 15px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--gradient-bg);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .header h1 {
+            position: relative;
+            z-index: 2;
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            position: relative;
+            z-index: 2;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .nav-tabs {
+            border: none;
+            background: linear-gradient(90deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            padding: 1rem 1.5rem;
+            color: var(--dark-color);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+
+        .nav-tabs .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-bg);
+            transition: left 0.3s ease;
+            z-index: 1;
+        }
+
+        .nav-tabs .nav-link.active::before {
+            left: 0;
+        }
+
+        .nav-tabs .nav-link span {
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active span {
+            color: white;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-bg);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--info-color), #0891b2);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.6rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        .table {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+        }
+
+        .table thead th {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 0.8rem;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+            transform: scale(1.01);
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .item-row {
+            background: white;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .item-row:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .cost-summary {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .variant-list {
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .variant-item {
+            background: white;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .variant-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .dimension-inputs {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .dimension-input {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .calculated-cost {
+            background: #e0f2fe;
+            border: 2px solid #0891b2;
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-weight: 600;
+            color: #0891b2;
+        }
+
+        .manual-override {
+            background: #fff3e0;
+            border: 2px solid #f57c00;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .action-buttons .btn {
+                width: auto;
+                flex: 1;
+                min-width: 70px;
+                margin-bottom: 0.25rem;
+            }
+            
+            .table {
+                font-size: 0.8rem;
+            }
+            
+            .table thead th {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.75rem;
+            }
+            
+            .table tbody td {
+                padding: 0.5rem 0.25rem;
+            }
+            
+            .modal-dialog {
+                margin: 1rem;
+            }
+            
+            .dimension-inputs {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .dimension-input {
+                flex: none;
+                width: 100%;
+            }
+            
+            .cost-item {
+                font-size: 0.9rem;
+            }
+            
+            .cost-item:last-child {
+                font-size: 1.1rem;
+            }
+            
+            .item-row {
+                padding: 0.75rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .btn {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .table {
+                font-size: 0.75rem;
+            }
+            
+            .form-control, .form-select {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse-effect {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .area-calculator {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .area-result {
+            font-weight: 600;
+            color: #0891b2;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <div class="header">
+                <h1><i class="fas fa-home"></i> Interior Design Estimation Pro</h1>
+                <p>Professional estimation tool for interior designers</p>
+            </div>
+            
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab">
+                        <span><i class="fas fa-cogs"></i> Modules</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="materials-tab" data-bs-toggle="tab" data-bs-target="#materials" type="button" role="tab">
+                        <span><i class="fas fa-cube"></i> Materials</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="estimate-tab" data-bs-toggle="tab" data-bs-target="#estimate" type="button" role="tab">
+                        <span><i class="fas fa-calculator"></i> Estimation</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content fade-in" id="myTabContent">
+                <div class="tab-pane fade show active" id="manage" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-layer-group"></i> Module Management
+                        </div>
+                        <div class="card-body">
+                            <button class="btn btn-primary mb-3" id="addModuleBtn" data-bs-toggle="modal" data-bs-target="#addModuleModal">
+                                <i class="fas fa-plus"></i> Add New Module
+                            </button>
+                            <div class="table-responsive">
+                                <table id="moduleTable" class="table table-hover"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="materials" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-boxes"></i> Material Management
+                        </div>
+                        <div class="card-body">
+                            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+                                <i class="fas fa-plus"></i> Add New Material
+                            </button>
+                            <div class="table-responsive">
+                                <table id="materialTable" class="table table-hover"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="estimate" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-file-invoice-dollar"></i> Project Estimation
+                        </div>
+                        <div class="card-body">
+                            <form id="estimationForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="customerName" class="form-label"><i class="fas fa-user"></i> Customer Name</label>
+                                        <input type="text" class="form-control" id="customerName" placeholder="Enter customer name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="projectName" class="form-label"><i class="fas fa-project-diagram"></i> Project Name</label>
+                                        <input type="text" class="form-control" id="projectName" placeholder="Enter project name" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="laborCost" class="form-label"><i class="fas fa-tools"></i> Labor Cost (₹)</label>
+                                        <input type="number" class="form-control" id="laborCost" placeholder="Enter labor cost" min="0" step="0.01" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-list"></i> Project Items</span>
+                                        <button type="button" class="btn btn-success btn-sm" id="addItemBtn" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                                            <i class="fas fa-plus"></i> Add Item
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="itemsContainer"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="cost-summary">
+                                    <h4 class="mb-3"><i class="fas fa-chart-line"></i> Cost Summary</h4>
+                                    <div class="cost-item">
+                                        <span><i class="fas fa-wrench"></i> Total Equipment Cost:</span>
+                                        <strong>₹<span id="totalEquipment">0.00</span></strong>
+                                    </div>
+                                    <div class="cost-item">
+                                        <span><i class="fas fa-building"></i> Total Company Cost:</span>
+                                        <strong>₹<span id="totalCompany">0.00</span></strong>
+                                    </div>
+                                    <div class="cost-item">
+                                        <span><i class="fas fa-user-tie"></i> Total Customer Cost:</span>
+                                        <strong>₹<span id="totalCustomer">0.00</span></strong>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <button type="button" class="btn btn-info w-100 pulse-effect" id="generateCompanyPDF">
+                                            <i class="fas fa-file-pdf"></i> Company PDF
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <button type="button" class="btn btn-success w-100 pulse-effect" id="generateCustomerPDF">
+                                            <i class="fas fa-file-invoice"></i> Customer PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Module Modal -->
+    <div class="modal fade" id="addModuleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="moduleModalTitle"><i class="fas fa-plus-circle"></i> Add Module</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="moduleId">
+                    <div class="mb-3">
+                        <label for="moduleName" class="form-label">Module Name</label>
+                        <input type="text" class="form-control" id="moduleName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentModule" class="form-label">Parent Module</label>
+                        <select class="form-select" id="parentModule">
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveModule">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Variant Modal -->
+    <div class="modal fade" id="addVariantModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="variantModalTitle"><i class="fas fa-palette"></i> Add Variant</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="variantModuleId">
+                    <input type="hidden" id="variantId">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="variantDesignName" class="form-label">Design Name</label>
+                            <input type="text" class="form-control" id="variantDesignName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="variantSize" class="form-label">Size Description</label>
+                            <input type="text" class="form-control" id="variantSize" placeholder="e.g., Standard, Large, Custom" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="variantDesignType" class="form-label">Design Type</label>
+                            <input type="text" class="form-control" id="variantDesignType" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="variantMaterial" class="form-label">Material</label>
+                            <select class="form-select" id="variantMaterial" required></select>
+                        </div>
+                    </div>
+                    
+                    <div class="area-calculator">
+                        <h6><i class="fas fa-ruler-combined"></i> Area Calculation (Enter dimensions in mm)</h6>
+                        <p class="text-muted mb-3"><small>
+                            <strong>For 2D surfaces:</strong> Enter Length and Width only<br>
+                            <strong>For 3D objects:</strong> Enter Length, Width, and Height<br>
+                            Cost will auto-calculate when you select a material and enter dimensions.
+                        </small></p>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="variantLength" class="form-label">Length (mm) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control dimension-input" id="variantLength" min="0" step="0.01" placeholder="e.g., 1000">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="variantWidth" class="form-label">Width (mm) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control dimension-input" id="variantWidth" min="0" step="0.01" placeholder="e.g., 800">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="variantHeight" class="form-label">Height (mm) <small class="text-muted">(Optional for 3D)</small></label>
+                                <input type="number" class="form-control dimension-input" id="variantHeight" min="0" step="0.01" placeholder="e.g., 600">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="area-result">
+                                    <strong>Calculated Area: <span id="calculatedArea" class="text-primary">0</span> mm²</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="area-result">
+                                    <strong>Material Cost: ₹<span id="materialCost" class="text-success">0.00</span></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 mt-3">
+                        <label for="variantCost" class="form-label">
+                            <i class="fas fa-calculator"></i> Final Cost (₹)
+                            <small class="text-muted">(Auto-calculated or manual override)</small>
+                        </label>
+                        <input type="number" class="form-control calculated-cost" id="variantCost" min="0" step="0.01" required>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="manualCostOverride">
+                            <label class="form-check-label" for="manualCostOverride">
+                                Manual cost override
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveVariant">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Material Modal -->
+    <div class="modal fade" id="addMaterialModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="materialModalTitle"><i class="fas fa-cube"></i> Add Material</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="materialId">
+                    <div class="mb-3">
+                        <label for="materialName" class="form-label">Material Name</label>
+                        <input type="text" class="form-control" id="materialName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="materialCostPerMm" class="form-label">Cost per mm² (₹)</label>
+                        <input type="number" class="form-control" id="materialCostPerMm" min="0" step="0.0001" required>
+                        <small class="text-muted">Enter cost per square millimeter</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveMaterial">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal fade" id="addItemModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> Add Item</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="itemModule" class="form-label">Select Module</label>
+                        <select class="form-select" id="itemModule" required></select>
+                        <small class="text-muted">Note: Sub-modules will be automatically included</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveItem">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteMessage">Are you sure you want to delete this?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modulesKey = 'modules';
+        const materialsKey = 'materials';
+        let currentItems = [];
+        let deleteTarget = null;
+
+        function getModules() {
+            return JSON.parse(localStorage.getItem(modulesKey) || '[]');
+        }
+
+        function saveModules(modules) {
+            localStorage.setItem(modulesKey, JSON.stringify(modules));
+        }
+
+        function getMaterials() {
+            return JSON.parse(localStorage.getItem(materialsKey) || '[]');
+        }
+
+        function saveMaterials(materials) {
+            localStorage.setItem(materialsKey, JSON.stringify(materials));
+        }
+
+        function generateUniqueId() {
+            return Date.now().toString(36) + Math.random().toString(36).substring(2);
+        }
+
+        function getModuleById(id) {
+            return getModules().find(m => m.id === id);
+        }
+
+        function getVariant(moduleId, vid) {
+            const module = getModuleById(moduleId);
+            return module ? module.variants.find(v => v.vid === vid) : null;
+        }
+
+        function getSubModules(parentId) {
+            return getModules().filter(m => m.parentId === parentId);
+        }
+
+        function getMaterialByName(name) {
+            return getMaterials().find(m => m.name === name);
+        }
+
+        // Calculate area based on dimensions
+        function calculateArea() {
+            const length = parseFloat(document.getElementById('variantLength').value) || 0;
+            const width = parseFloat(document.getElementById('variantWidth').value) || 0;
+            const height = parseFloat(document.getElementById('variantHeight').value) || 0;
+            
+            let area = 0;
+            if (length && width) {
+                if (height && height > 0) {
+                    // For 3D objects, calculate volume-based area
+                    area = length * width * height;
+                } else {
+                    // For 2D objects, simple area calculation
+                    area = length * width;
+                }
+            }
+            
+            document.getElementById('calculatedArea').textContent = area.toFixed(2);
+            calculateMaterialCost(area);
+            return area;
+        }
+
+        // Calculate material cost based on area and selected material
+        function calculateMaterialCost(area) {
+            const selectedMaterial = document.getElementById('variantMaterial').value;
+            const material = getMaterialByName(selectedMaterial);
+            
+            let materialCost = 0;
+            if (material && area > 0) {
+                materialCost = area * material.cost_per_mm;
+            }
+            
+            document.getElementById('materialCost').textContent = materialCost.toFixed(2);
+            
+            // Auto-update final cost if not manually overridden
+            const manualOverride = document.getElementById('manualCostOverride').checked;
+            if (!manualOverride && materialCost > 0) {
+                document.getElementById('variantCost').value = materialCost.toFixed(2);
+                updateCostFieldStyle(false);
+            }
+            
+            return materialCost;
+        }
+
+        // Update cost field styling based on manual override
+        function updateCostFieldStyle(isManual) {
+            const costField = document.getElementById('variantCost');
+            if (isManual) {
+                costField.className = 'form-control manual-override';
+            } else {
+                costField.className = 'form-control calculated-cost';
+            }
+        }
+
+        // Calculate total cost for a module including sub-modules
+        function calculateModuleTotalCost(moduleId) {
+            const module = getModuleById(moduleId);
+            if (!module) return 0;
+            
+            let totalCost = 0;
+            
+            // Add cost of module's own variants (using the cheapest or average variant as base)
+            if (module.variants.length > 0) {
+                const avgVariantCost = module.variants.reduce((sum, v) => sum + v.cost, 0) / module.variants.length;
+                totalCost += avgVariantCost;
+            }
+            
+            // Add cost of sub-modules recursively
+            const subModules = getSubModules(moduleId);
+            subModules.forEach(subModule => {
+                totalCost += calculateModuleTotalCost(subModule.id);
+            });
+            
+            return totalCost;
+        }
+
+        function renderModuleTable() {
+            const modules = getModules().sort((a, b) => a.name.localeCompare(b.name));
+            let html = `<thead><tr><th>Module Name</th><th>Parent Module</th><th>Actions</th><th>Variants</th></tr></thead><tbody>`;
+            
+            modules.forEach(m => {
+                const parentName = m.parentId ? getModuleById(m.parentId)?.name || 'None' : 'None';
+                html += `<tr>
+                    <td><strong>${m.name}</strong></td>
+                    <td><span class="badge bg-secondary">${parentName}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-info btn-sm addVariant" data-id="${m.id}" title="Add Variant">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm editModule" data-id="${m.id}" title="Edit Module">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm deleteModule" data-id="${m.id}" title="Delete Module">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td>`;
+                
+                if (m.variants.length > 0) {
+                    html += `<div class="variant-list">`;
+                    m.variants.forEach(v => {
+                        html += `<div class="variant-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${v.designName}</strong><br>
+                                    <small class="text-muted">${v.size} | ${v.designType} | ${v.material}</small><br>
+                                    ${v.area ? `<small class="text-info">Area: ${v.area.toFixed(2)} mm²</small><br>` : ''}
+                                    <span class="text-success"><strong>₹${v.cost.toFixed(2)}</strong></span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-warning btn-sm editVariant" data-module-id="${m.id}" data-vid="${v.vid}" title="Edit Variant">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm deleteVariant" data-module-id="${m.id}" data-vid="${v.vid}" title="Delete Variant">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<span class="text-muted"><i class="fas fa-info-circle"></i> No variants added</span>`;
+                }
+                
+                html += `</td></tr>`;
+            });
+            html += `</tbody>`;
+            document.getElementById('moduleTable').innerHTML = html;
+        }
+
+        function renderMaterialTable() {
+            const materials = getMaterials().sort((a, b) => a.name.localeCompare(b.name));
+            let html = `<thead><tr><th>Material Name</th><th>Cost per mm² (₹)</th><th>Actions</th></tr></thead><tbody>`;
+            
+            materials.forEach(mat => {
+                html += `<tr>
+                    <td><strong>${mat.name}</strong></td>
+                    <td><span class="badge bg-success">₹${mat.cost_per_mm.toFixed(4)}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning btn-sm editMaterial" data-id="${mat.id}" title="Edit Material">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm deleteMaterial" data-id="${mat.id}" title="Delete Material">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody>`;
+            document.getElementById('materialTable').innerHTML = html;
+        }
+
+        function populateParentSelect(selectId, excludeId = null) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">None</option>';
+            getModules().filter(m => m.id !== excludeId).forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.id;
+                option.textContent = m.name;
+                select.appendChild(option);
+            });
+        }
+
+        function populateModuleSelect(selectId) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '';
+            getModules().sort((a, b) => a.name.localeCompare(b.name)).forEach(m => {
+                const option = document.createElement('option');
+                option.value = m.id;
+                option.textContent = m.name;
+                select.appendChild(option);
+            });
+        }
+
+        function populateMaterialSelect(selectId) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Select Material</option>';
+            getMaterials().sort((a, b) => a.name.localeCompare(b.name)).forEach(mat => {
+                const option = document.createElement('option');
+                option.value = mat.name;
+                option.textContent = `${mat.name} (₹${mat.cost_per_mm.toFixed(4)}/mm²)`;
+                select.appendChild(option);
+            });
+        }
+
+        function deleteModule(id) {
+            let modules = getModules();
+            const toDelete = new Set([id]);
+            let added = true;
+            while (added) {
+                added = false;
+                modules.forEach(m => {
+                    if (toDelete.has(m.parentId) && !toDelete.has(m.id)) {
+                        toDelete.add(m.id);
+                        added = true;
+                    }
+                });
+            }
+            modules = modules.filter(m => !toDelete.has(m.id));
+            saveModules(modules);
+            renderModuleTable();
+        }
+
+        function deleteVariant(moduleId, vid) {
+            const modules = getModules();
+            const module = modules.find(m => m.id === moduleId);
+            if (module) {
+                module.variants = module.variants.filter(v => v.vid !== vid);
+                saveModules(modules);
+                renderModuleTable();
+            }
+        }
+
+        function deleteMaterial(id) {
+            let materials = getMaterials();
+            materials = materials.filter(mat => mat.id !== id);
+            saveMaterials(materials);
+            renderMaterialTable();
+        }
+
+        // Fixed function to prevent parent variant attributes from being shuffled to sub-modules
+        function addRecursive(moduleId, level, markup, isSubModule = false) {
+            // Only add the module itself, not its variants automatically for sub-modules
+            currentItems.push({ 
+                moduleId, 
+                vid: null, 
+                qty: 1, 
+                markup, 
+                level,
+                isSubModule: isSubModule 
+            });
+            
+            // Recursively add sub-modules
+            const subModules = getSubModules(moduleId);
+            subModules.forEach(sub => addRecursive(sub.id, level + 1, markup, true));
+        }
+
+        function renderItems() {
+            const container = document.getElementById('itemsContainer');
+            let html = '';
+            
+            if (currentItems.length === 0) {
+                html = `<div class="text-center text-muted p-4">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <p>No items added yet. Click "Add Item" to get started.</p>
+                </div>`;
+            } else {
+                currentItems.forEach((item, index) => {
+                    const module = getModuleById(item.moduleId);
+                    if (!module) return;
+                    
+                    let variantOptions = '<option value="">Select Variant</option>';
+                    module.variants.forEach(v => {
+                        const areaText = v.area ? ` (${v.area.toFixed(2)} mm²)` : '';
+                        variantOptions += `<option value="${v.vid}" ${v.vid === item.vid ? 'selected' : ''}>${v.designName} - ${v.size}, ${v.designType}, ${v.material}${areaText} - ₹${v.cost.toFixed(2)}</option>`;
+                    });
+                    
+                    const indentStyle = item.level > 0 ? `margin-left: ${item.level * 20}px; border-left: 3px solid #e0e7ff;` : '';
+                    const levelBadge = item.level > 0 ? `<span class="badge bg-info me-2">L${item.level}</span>` : '';
+                    
+                    html += `
+                        <div class="item-row" style="${indentStyle}">
+                            <div class="row align-items-center">
+                                <div class="col-lg-3 col-md-4 mb-2">
+                                    <label class="form-label">
+                                        ${levelBadge}<strong>${module.name}</strong>
+                                        ${item.isSubModule ? '<small class="text-muted d-block">Sub-module</small>' : ''}
+                                    </label>
+                                </div>
+                                <div class="col-lg-3 col-md-4 mb-2">
+                                    <label class="form-label">Variant</label>
+                                    <select class="form-select form-select-sm variantSelect" data-index="${index}">
+                                        ${variantOptions}
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-6 mb-2">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control form-control-sm qtyInput" data-index="${index}" value="${item.qty}" min="1">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-6 mb-2">
+                                    <label class="form-label">Markup (%)</label>
+                                    <input type="number" class="form-control form-control-sm markupInput" data-index="${index}" value="${item.markup}" min="0">
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-6 mb-2">
+                                    <label class="form-label">Total</label>
+                                    <div class="badge bg-success w-100 itemTotal">₹0.00</div>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-6 mb-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button class="btn btn-danger btn-sm removeItem w-100" data-index="${index}" title="Remove Item">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+            updateTotals();
+        }
+
+        function updateTotals() {
+            let equipment = 0;
+            let customer = 0;
+            
+            currentItems.forEach((item, index) => {
+                const v = getVariant(item.moduleId, item.vid);
+                if (v) {
+                    const base = item.qty * v.cost;
+                    equipment += base;
+                    customer += base * (1 + item.markup / 100);
+                    const row = document.querySelector(`.item-row:nth-child(${index + 1}) .itemTotal`);
+                    if (row) row.textContent = `₹${(base * (1 + item.markup / 100)).toFixed(2)}`;
+                }
+            });
+            
+            const labor = parseFloat(document.getElementById('laborCost').value) || 0;
+            const companyTotal = equipment + labor;
+            const customerTotal = customer + labor; // Labor added to customer cost as well
+            
+            document.getElementById('totalEquipment').textContent = equipment.toFixed(2);
+            document.getElementById('totalCompany').textContent = companyTotal.toFixed(2);
+            document.getElementById('totalCustomer').textContent = customerTotal.toFixed(2);
+        }
+
+        function collectData() {
+            const customerName = document.getElementById('customerName').value.trim();
+            const projectName = document.getElementById('projectName').value.trim();
+            const labor = parseFloat(document.getElementById('laborCost').value) || 0;
+            return { customerName, projectName, labor, items: currentItems };
+        }
+
+        function generatePDF(isCompany) {
+            const data = collectData();
+            if (!data.customerName || !data.projectName || !data.items.length) {
+                alert('Please fill in all required fields and add at least one item with selected variants.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(99, 102, 241);
+            doc.text(`${isCompany ? 'Company' : 'Customer'} Estimation`, 105, 20, { align: 'center' });
+            
+            // Company details
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Interior Design Pro', 20, 35);
+            doc.text('Professional Interior Design Services', 20, 42);
+            
+            // Project details
+            doc.setFontSize(14);
+            doc.text(`Project: ${data.projectName}`, 20, 55);
+            doc.text(`Customer: ${data.customerName}`, 20, 65);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 75);
+            doc.text(`Estimation Type: ${isCompany ? 'Internal Company Cost' : 'Customer Quotation'}`, 20, 85);
+
+            const tableData = data.items.map(item => {
+                const module = getModuleById(item.moduleId);
+                const v = getVariant(item.moduleId, item.vid);
+                if (!v) return null;
+                
+                const variantDesc = `${v.designName} (${v.size}, ${v.designType}, ${v.material})${v.area ? ` [${v.area.toFixed(2)} mm²]` : ''}`;
+                const unitPrice = isCompany ? v.cost : v.cost * (1 + item.markup / 100);
+                const total = item.qty * unitPrice;
+                
+                return [
+                    `${' '.repeat(item.level * 2)}${module.name}`, 
+                    variantDesc, 
+                    item.qty, 
+                    `₹${unitPrice.toFixed(2)}`, 
+                    `₹${total.toFixed(2)}`
+                ];
+            }).filter(x => x);
+
+            doc.autoTable({
+                head: [['Item', 'Variant Details', 'Qty', isCompany ? 'Unit Cost' : 'Unit Price', 'Total']],
+                body: tableData,
+                startY: 95,
+                theme: 'striped',
+                headStyles: { 
+                    fillColor: [99, 102, 241],
+                    textColor: 255,
+                    fontSize: 10,
+                    fontStyle: 'bold'
+                },
+                bodyStyles: {
+                    fontSize: 9
+                },
+                columnStyles: {
+                    0: { cellWidth: 40 },
+                    1: { cellWidth: 60 },
+                    2: { cellWidth: 20, halign: 'center' },
+                    3: { cellWidth: 30, halign: 'right' },
+                    4: { cellWidth: 30, halign: 'right' }
+                }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 15;
+            
+            // Cost summary
+            doc.setFontSize(12);
+            if (isCompany) {
+                doc.text(`Equipment Total: ₹${document.getElementById('totalEquipment').textContent}`, 140, finalY);
+                finalY += 8;
+                doc.text(`Labor Cost: ₹${data.labor.toFixed(2)}`, 140, finalY);
+                finalY += 8;
+                doc.setFontSize(14);
+                doc.setTextColor(99, 102, 241);
+                doc.text(`Grand Total: ₹${document.getElementById('totalCompany').textContent}`, 140, finalY);
+            } else {
+                doc.setFontSize(14);
+                doc.setTextColor(99, 102, 241);
+                doc.text(`Grand Total: ₹${document.getElementById('totalCustomer').textContent}`, 140, finalY);
+            }
+
+            // Footer
+            finalY += 25;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Terms & Conditions:', 20, finalY);
+            finalY += 8;
+            doc.text('• All prices are inclusive of materials and labor unless specified', 20, finalY);
+            finalY += 6;
+            doc.text('• 50% advance payment required before starting work', 20, finalY);
+            finalY += 6;
+            doc.text('• Project completion timeline: 30-45 working days', 20, finalY);
+            finalY += 15;
+            doc.text('Approved By: ________________________', 20, finalY);
+            doc.text('Date: ________________________', 120, finalY);
+
+            doc.save(`${isCompany ? 'Company' : 'Customer'}_Estimation_${data.projectName.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        // Event Listeners
+        document.addEventListener('click', e => {
+            if (e.target.closest('.addVariant')) {
+                const btn = e.target.closest('.addVariant');
+                document.getElementById('variantModuleId').value = btn.dataset.id;
+                document.getElementById('variantId').value = '';
+                document.getElementById('variantDesignName').value = '';
+                document.getElementById('variantSize').value = '';
+                document.getElementById('variantDesignType').value = '';
+                document.getElementById('variantLength').value = '';
+                document.getElementById('variantWidth').value = '';
+                document.getElementById('variantHeight').value = '';
+                document.getElementById('variantCost').value = '';
+                document.getElementById('manualCostOverride').checked = false;
+                populateMaterialSelect('variantMaterial');
+                document.getElementById('variantModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add Variant';
+                calculateArea();
+                updateCostFieldStyle(false);
+                new bootstrap.Modal(document.getElementById('addVariantModal')).show();
+            } else if (e.target.closest('.editVariant')) {
+                const btn = e.target.closest('.editVariant');
+                const moduleId = btn.dataset.moduleId;
+                const vid = btn.dataset.vid;
+                const v = getVariant(moduleId, vid);
+                document.getElementById('variantModuleId').value = moduleId;
+                document.getElementById('variantId').value = vid;
+                document.getElementById('variantDesignName').value = v.designName;
+                document.getElementById('variantSize').value = v.size;
+                document.getElementById('variantDesignType').value = v.designType;
+                document.getElementById('variantLength').value = v.length || '';
+                document.getElementById('variantWidth').value = v.width || '';
+                document.getElementById('variantHeight').value = v.height || '';
+                document.getElementById('variantCost').value = v.cost;
+                document.getElementById('manualCostOverride').checked = v.manualOverride || false;
+                populateMaterialSelect('variantMaterial');
+                document.getElementById('variantMaterial').value = v.material;
+                document.getElementById('variantModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Variant';
+                calculateArea();
+                updateCostFieldStyle(v.manualOverride || false);
+                new bootstrap.Modal(document.getElementById('addVariantModal')).show();
+            } else if (e.target.closest('.deleteVariant')) {
+                const btn = e.target.closest('.deleteVariant');
+                deleteTarget = { type: 'variant', moduleId: btn.dataset.moduleId, vid: btn.dataset.vid };
+                document.getElementById('deleteMessage').textContent = 'Are you sure you want to delete this variant?';
+                new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+            } else if (e.target.closest('.editModule')) {
+                const btn = e.target.closest('.editModule');
+                const id = btn.dataset.id;
+                const module = getModuleById(id);
+                document.getElementById('moduleId').value = id;
+                document.getElementById('moduleName').value = module.name;
+                populateParentSelect('parentModule', id);
+                document.getElementById('parentModule').value = module.parentId || '';
+                document.getElementById('moduleModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Module';
+                new bootstrap.Modal(document.getElementById('addModuleModal')).show();
+            } else if (e.target.closest('.deleteModule')) {
+                const btn = e.target.closest('.deleteModule');
+                deleteTarget = { type: 'module', id: btn.dataset.id };
+                document.getElementById('deleteMessage').textContent = 'Are you sure you want to delete this module and all its sub-modules?';
+                new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+            } else if (e.target.closest('.editMaterial')) {
+                const btn = e.target.closest('.editMaterial');
+                const id = btn.dataset.id;
+                const mat = getMaterials().find(m => m.id === id);
+                document.getElementById('materialId').value = id;
+                document.getElementById('materialName').value = mat.name;
+                document.getElementById('materialCostPerMm').value = mat.cost_per_mm;
+                document.getElementById('materialModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Material';
+                new bootstrap.Modal(document.getElementById('addMaterialModal')).show();
+            } else if (e.target.closest('.deleteMaterial')) {
+                const btn = e.target.closest('.deleteMaterial');
+                deleteTarget = { type: 'material', id: btn.dataset.id };
+                document.getElementById('deleteMessage').textContent = 'Are you sure you want to delete this material?';
+                new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+            } else if (e.target.closest('.removeItem')) {
+                const btn = e.target.closest('.removeItem');
+                currentItems.splice(parseInt(btn.dataset.index), 1);
+                renderItems();
+            }
+        });
+
+        // Dimension change listeners for auto-calculation
+        ['variantLength', 'variantWidth', 'variantHeight'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                console.log(`${id} changed to:`, this.value); // Debug log
+                calculateArea();
+            });
+        });
+
+        // Material change listener
+        document.getElementById('variantMaterial').addEventListener('change', function() {
+            console.log('Material changed to:', this.value); // Debug log
+            calculateArea();
+        });
+
+        // Manual override checkbox listener
+        document.getElementById('manualCostOverride').addEventListener('change', function() {
+            updateCostFieldStyle(this.checked);
+            if (!this.checked) {
+                calculateArea(); // Recalculate when switching back to auto
+            }
+        });
+
+        document.getElementById('saveModule').addEventListener('click', () => {
+            const id = document.getElementById('moduleId').value;
+            const name = document.getElementById('moduleName').value.trim();
+            const parentId = document.getElementById('parentModule').value || null;
+            if (!name) return;
+            
+            let modules = getModules();
+            if (id) {
+                const module = modules.find(m => m.id === id);
+                module.name = name;
+                module.parentId = parentId;
+            } else {
+                modules.push({ id: generateUniqueId(), name, parentId, variants: [] });
+            }
+            saveModules(modules);
+            renderModuleTable();
+            bootstrap.Modal.getInstance(document.getElementById('addModuleModal')).hide();
+        });
+
+        document.getElementById('saveVariant').addEventListener('click', () => {
+            const moduleId = document.getElementById('variantModuleId').value;
+            const vid = document.getElementById('variantId').value;
+            const designName = document.getElementById('variantDesignName').value.trim();
+            const size = document.getElementById('variantSize').value.trim();
+            const designType = document.getElementById('variantDesignType').value.trim();
+            const material = document.getElementById('variantMaterial').value;
+            const cost = parseFloat(document.getElementById('variantCost').value) || 0;
+            const length = parseFloat(document.getElementById('variantLength').value) || 0;
+            const width = parseFloat(document.getElementById('variantWidth').value) || 0;
+            const height = parseFloat(document.getElementById('variantHeight').value) || 0;
+            const manualOverride = document.getElementById('manualCostOverride').checked;
+            
+            if (!designName || !size || !designType || !material || isNaN(cost)) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            const area = calculateArea();
+            
+            const modules = getModules();
+            const module = modules.find(m => m.id === moduleId);
+            
+            const variantData = {
+                vid: vid || generateUniqueId(),
+                designName,
+                size,
+                designType,
+                material,
+                cost,
+                length,
+                width,
+                height,
+                area,
+                manualOverride
+            };
+            
+            if (vid) {
+                const vIndex = module.variants.findIndex(v => v.vid === vid);
+                module.variants[vIndex] = variantData;
+            } else {
+                module.variants.push(variantData);
+            }
+            
+            saveModules(modules);
+            renderModuleTable();
+            bootstrap.Modal.getInstance(document.getElementById('addVariantModal')).hide();
+        });
+
+        document.getElementById('saveMaterial').addEventListener('click', () => {
+            const id = document.getElementById('materialId').value;
+            const name = document.getElementById('materialName').value.trim();
+            const cost_per_mm = parseFloat(document.getElementById('materialCostPerMm').value) || 0;
+            
+            if (!name || isNaN(cost_per_mm)) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            let materials = getMaterials();
+            if (id) {
+                const mat = materials.find(m => m.id === id);
+                mat.name = name;
+                mat.cost_per_mm = cost_per_mm;
+            } else {
+                materials.push({ id: generateUniqueId(), name, cost_per_mm });
+            }
+            saveMaterials(materials);
+            renderMaterialTable();
+            bootstrap.Modal.getInstance(document.getElementById('addMaterialModal')).hide();
+        });
+
+        document.getElementById('confirmDelete').addEventListener('click', () => {
+            if (deleteTarget.type === 'module') {
+                deleteModule(deleteTarget.id);
+            } else if (deleteTarget.type === 'variant') {
+                deleteVariant(deleteTarget.moduleId, deleteTarget.vid);
+            } else if (deleteTarget.type === 'material') {
+                deleteMaterial(deleteTarget.id);
+            }
+            bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+        });
+
+        document.getElementById('addModuleModal').addEventListener('shown.bs.modal', () => {
+            if (!document.getElementById('moduleId').value) {
+                document.getElementById('moduleId').value = '';
+                document.getElementById('moduleName').value = '';
+                populateParentSelect('parentModule');
+                document.getElementById('moduleModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add Module';
+            }
+        });
+
+        document.getElementById('addMaterialModal').addEventListener('shown.bs.modal', () => {
+            if (!document.getElementById('materialId').value) {
+                document.getElementById('materialId').value = '';
+                document.getElementById('materialName').value = '';
+                document.getElementById('materialCostPerMm').value = '';
+                document.getElementById('materialModalTitle').innerHTML = '<i class="fas fa-cube"></i> Add Material';
+            }
+        });
+
+        document.getElementById('addItemModal').addEventListener('shown.bs.modal', () => {
+            populateModuleSelect('itemModule');
+        });
+
+        document.getElementById('saveItem').addEventListener('click', () => {
+            const moduleId = document.getElementById('itemModule').value;
+            if (!moduleId) return;
+            
+            // Always add main module and all its sub-modules
+            addRecursive(moduleId, 0, 0, false);
+            
+            renderItems();
+            bootstrap.Modal.getInstance(document.getElementById('addItemModal')).hide();
+        });
+
+        document.addEventListener('change', e => {
+            if (e.target.classList.contains('variantSelect')) {
+                currentItems[e.target.dataset.index].vid = e.target.value || null;
+                updateTotals();
+            }
+            if (e.target.classList.contains('qtyInput')) {
+                currentItems[e.target.dataset.index].qty = parseFloat(e.target.value) || 1;
+                updateTotals();
+            }
+            if (e.target.classList.contains('markupInput')) {
+                currentItems[e.target.dataset.index].markup = parseFloat(e.target.value) || 0;
+                updateTotals();
+            }
+        });
+
+        document.getElementById('laborCost').addEventListener('input', updateTotals);
+        document.getElementById('generateCompanyPDF').addEventListener('click', () => generatePDF(true));
+        document.getElementById('generateCustomerPDF').addEventListener('click', () => generatePDF(false));
+
+        // Initialize the application
+        renderModuleTable();
+        renderMaterialTable();
+        renderItems();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
